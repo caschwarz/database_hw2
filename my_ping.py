@@ -1,13 +1,15 @@
 #necessary imports
 import argparse
-from scapy.all import *
 import time
 import datetime
 from scapy.layers.inet import IP, ICMP
 from scapy.sendrecv import sr1
+from scapy.packet import Raw
 
 """
-
+This function continuously sends packets to the server to ping them. It uses the parameters defined in
+the main function to decide what size of packet to send, how long to send them, how many to send and how long to wait
+between sending them. It displays the output data to the standard output
 """
 def ping(destination,packets_to_receive, wait_time, data_to_send, timeout):
     start_time = datetime.datetime.now() #starts time for timing the execution
@@ -18,7 +20,7 @@ def ping(destination,packets_to_receive, wait_time, data_to_send, timeout):
         #reduce number of packets to receive
         packets_to_receive-=1
         #send the actual packet
-        packet = IP(dst=destination) / ICMP()
+        packet = IP(dst=destination) / ICMP() /Raw(b"\x00" * data_to_send)
         response = sr1(packet, verbose=True)
         #print the response
         if response:
